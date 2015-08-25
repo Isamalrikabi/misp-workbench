@@ -1,0 +1,4 @@
+python-mysql
+sqlalchemy
+pycrypto
+redis
