@@ -1,4 +1,5 @@
-python-mysql
+mysql-python
 sqlalchemy
 pycrypto
 redis
+flask
