@@ -2,15 +2,15 @@
 # -*- coding: utf-8 -*-
 
 from flask import Flask, json, request
-from redis import StrictRedis
-from Crypto.Hash import SHA
+from connector import MispRedisConnector
 
-from config import redis_socket
 
 app = Flask(__name__)
 app.debug = True
 
 authorized_methods = ['search']
+
+connector = MispRedisConnector()
 
 
 class SetEncoder(json.JSONEncoder):
@@ -44,18 +44,11 @@ def __entry_point():
 
 
 def search(request):
-    if request.get('value'):
-        hash_value = SHA.new(request.get('value')).hexdigest()
-    else:
-        hash_value = request.get('hash_value')
-    if hash_value is None:
-        return json.dumps({})
-    r = StrictRedis(unix_socket_path=redis_socket)
-    known_uuids = r.smembers(hash_value)
-    to_return = {'known': (len(known_uuids) != 0)}
-    if not request.get('quiet'):
-        to_return['uuids'] = known_uuids
-    return to_return
+    if not request.get('authkey'):
+        return json.dumps({'error': 'The authkey is required.'})
+    return connector.search(request.get('authkey'), request.get('value'),
+                            request.get('hash_value'), request.get('quiet'))
+
 
 if __name__ == '__main__':
     app.run()
