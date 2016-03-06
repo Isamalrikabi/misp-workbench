@@ -29,9 +29,13 @@ class MispRedisConnector(object):
 
         if quiet:
             return [(self.r.exists(h) or self.r.exists(org + ':' + h)) for h in hash_values]
-        to_return = [self.r.smembers(h).union(self.r.smembers(org + ':' + h)) for h in hash_values]
-        if return_eid:
-            to_return = [self.r.hget('uuid_id', uuid) for uuid in to_return]
+        uuid_by_hashes = [self.r.smembers(h).union(self.r.smembers(org + ':' + h)) for h in hash_values]
+        if not return_eid:
+            to_return = uuid_by_hashes
+        else:
+            to_return = []
+            for h in uuid_by_hashes:
+                to_return.append([self.r.hget('uuid_id', uuid) for uuid in h])
         return to_return
 
     def __get_org_by_auth(self, authkey):
