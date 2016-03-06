@@ -47,7 +47,8 @@ def search(request):
     if not request.get('authkey'):
         return json.dumps({'error': 'The authkey is required.'})
     return connector.search(request.get('authkey'), request.get('value'),
-                            request.get('hash_value'), request.get('quiet'))
+                            request.get('hash_value'), request.get('return_eid'),
+                            request.get('quiet'))
 
 
 if __name__ == '__main__':

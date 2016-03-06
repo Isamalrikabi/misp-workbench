@@ -12,7 +12,7 @@ class MispRedisConnector(object):
     def __init__(self):
         self.r = StrictRedis(unix_socket_path=redis_socket)
 
-    def search(self, authkey, values=None, hash_values=None, quiet=False):
+    def search(self, authkey, values=None, hash_values=None, return_eid=False, quiet=False):
         if isinstance(values, list):
             hash_values = [SHA256.new(v.lower()).hexdigest() for v in values]
         elif values:
@@ -29,7 +29,10 @@ class MispRedisConnector(object):
 
         if quiet:
             return [(self.r.exists(h) or self.r.exists(org + ':' + h)) for h in hash_values]
-        return [self.r.smembers(h).union(self.r.smembers(org + ':' + h)) for h in hash_values]
+        to_return = [self.r.smembers(h).union(self.r.smembers(org + ':' + h)) for h in hash_values]
+        if return_eid:
+            to_return = [self.r.hget('uuid_id', uuid) for uuid in to_return]
+        return to_return
 
     def __get_org_by_auth(self, authkey):
         return self.r.get(authkey)
@@ -67,6 +70,7 @@ class MispMySQLConnector(object):
         results = self.connection.execute(select([self.events]))
         for event in results:
             eid_uuid[event['id']] = event['uuid']
+            self.r.hset('uuid_id', event['uuid'], event['id'])
         return eid_uuid
 
     # ####### Cache all attributes for fast access. Auth preserved. ########

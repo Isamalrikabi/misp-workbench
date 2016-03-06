@@ -15,9 +15,9 @@ def __prepare_request(query):
     return r.json()
 
 
-def search(auth_key, value=None, hash_value=None, quiet=False, verbose=False):
+def search(auth_key, value=None, hash_value=None, quiet=False, verbose=False, return_eid=False):
     query = {'method': 'search'}
-    query.update({'authkey': auth_key, 'hash_value': hash_value, 'value': value, 'quiet': quiet})
+    query.update({'authkey': auth_key, 'hash_value': hash_value, 'value': value, 'quiet': quiet, 'return_eid': return_eid})
     response = __prepare_request(query)
     if quiet or not verbose:
         return response
@@ -31,8 +31,9 @@ if __name__ == '__main__':
     parser.add_argument("-s", "--value", help="Value tu search.")
     parser.add_argument("-a", "--hash_value", help="Hash of the value (sha256).")
     parser.add_argument("-q", "--quiet", action='store_true', help="Quiet query, doesn't returns UUIDs.")
+    parser.add_argument("-e", "--eid", action='store_true', help="Return Event ids instead of UUIDs")
     parser.add_argument("-v", "--verbose", action='store_true', help="Verbose query, returns URLs.")
 
     args = parser.parse_args()
 
-    print(search(args.authkey, args.value, args.hash_value, args.quiet, args.verbose))
+    print(search(args.authkey, args.value, args.hash_value, args.quiet, args.verbose, args.eid))
