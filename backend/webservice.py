@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from flask import Flask, json, request
-from connector import MispRedisConnector
+from connector_webservice import MispRedisConnector
 
 
 app = Flask(__name__)
