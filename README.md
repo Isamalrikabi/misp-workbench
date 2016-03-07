@@ -20,12 +20,12 @@ The two main usecases are the following:
 * System requirements to connect to MySQL: `apt-get install libmysqlclient-dev`
 * Install required python packages: `pip install mysql-python sqlalchemy pycrypto redis flask`
 * Configure the connection to MySQL and redis in `backend/config.py`: 
- ```
-    user = '<MySQL username>'
-    password = '<MySQL user password>'
-    host = '<MySQL host>'
-    dbname = '<MySQL database name>'
-    redis_socket = '<path to the redis socket>'
+ ```python
+user = '<MySQL username>'
+password = '<MySQL user password>'
+host = '<MySQL host>'
+dbname = '<MySQL database name>'
+redis_socket = '<path to the redis socket>'
  ```
  * Run a redis server listening on the socket you defined in the config file
  * Run `backend/make_cache.py`
