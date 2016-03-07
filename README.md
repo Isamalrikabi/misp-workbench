@@ -29,7 +29,7 @@ dbname = '<MySQL database name>'
 redis_socket = '<path to the redis socket>'
  ```
  
- * Run a redis server listening on the socket you defined in the config file
- * Run `backend/make_cache.py`
- * Run `backend/webservice.py`
- * Query the database using `client/search.py` (requires `pip install requests`)
+* Run a redis server listening on the socket you defined in the config file
+* Run `backend/make_cache.py`
+* Run `backend/webservice.py`
+* Query the database using `client/search.py` (requires `pip install requests`)
