@@ -45,6 +45,53 @@ class MispMySQLConnector(object):
             self.r.hset('uuid_id', event['uuid'], event['id'])
         return eid_uuid
 
+    # ####### Get specific information from the database, Auth NOT preserved.#######
+
+    def get_event_digest(self, list_eids=None):
+        '''
+            Returns a igest of the events in list_eids. If None: all the events.
+
+            List:
+                [
+                    [id, uuid, info, date of the event, timestamp of the last update],
+                    ...
+                ]
+
+        '''
+        results = self.connection.execute(select([self.events]))
+        to_return = []
+        for event in results:
+            to_add = True
+            if list_eids and event['id'] not in list_eids:
+                to_add = False
+            if to_add:
+                to_return.append([event['id'], event['uuid'], event['info'], event['date'], event['timestamp']])
+        return to_return
+
+    def get_CVE_events(self, list_eids=None):
+        '''
+            Returns CVE IDs by events in list_eids. If None: all the events.
+
+            Dict:
+                {
+                    event_id: [CVE ID, ...].
+                    ...
+                }
+        '''
+        to_return = {}
+        attributes = self.connection.execute(select([self.attributes]))
+        for a in attributes:
+            to_add = False
+            if a['type'] == 'vulnerability':
+                to_add = True
+                if list_eids and a['event_id'] not in list_eids:
+                    to_add = False
+            if to_add:
+                if not to_return.get(a['event_id']):
+                    to_return[a['event_id']] = []
+                to_return[a['event_id']].append(a['value1'])
+        return to_return
+
     # ####### Cache all attributes for fast access. Auth preserved. ########
 
     def _add_hash(self, event_uuid, value1, value2='', orgid=None):
