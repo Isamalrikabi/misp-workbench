@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import argparse
+import json
+from misp_fast_lookup import search
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Search if a value is known in a MISP instance.')
+    parser.add_argument("-c", "--cache_url", default='http://127.0.0.1:5000/json', help="URL of the webservice.")
+    parser.add_argument("-m", "--misp_url", default='https://misppriv.circl.lu', help="URL of the remote MISP instance (unly used in the verbose output).")
+    parser.add_argument("-k", "--authkey", help="Authorization key.")
+    parser.add_argument("-f", "--values", help="Values to search (from a file).")
+    parser.add_argument("-s", "--value", help="Value to search.")
+    parser.add_argument("-a", "--hash_value", help="Hash of the value (sha256).")
+    parser.add_argument("-q", "--quiet", action='store_true', help="Quiet query, doesn't returns UUIDs.")
+    parser.add_argument("-e", "--eid", action='store_true', help="Return Event ids instead of UUIDs")
+    parser.add_argument("-v", "--verbose", action='store_true', help="Verbose query, returns URLs.")
+
+    args = parser.parse_args()
+
+    if args.values:
+        with open(args.values, 'rb') as f:
+            v = [l.strip() for l in f]
+    else:
+        v = [args.value]
+
+    print(json.dumps(dict(zip(v, search(args.cache_url, args.misp_url, args.authkey, v, args.hash_value, args.quiet, args.verbose, args.eid)))))
