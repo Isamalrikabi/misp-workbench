@@ -10,10 +10,10 @@ If an event is only visible to one organisation, the users with an authorization
 
 # Usage
 
-The two main usecases are the following:
+The two main use cases are the following:
 
-* Running very fast hundreds or thoudand of queries against a MISP instance
-* Searching for indicators from an airgaped environment with no access to a remote MISP instance, or on an untrusted computer
+* Running very fast hundreds or thousands of queries against a MISP instance
+* Searching for indicators from an air gapped environment with no access to a remote MISP instance, or on an untrusted computer
 
 # Setup MISP export
 
@@ -35,7 +35,7 @@ redis_socket = '<path to the redis socket>'
 ## Optional if you want to copy the redis database to an other machine
 
 * Connect to redis: `redis-cli -s <path to the redis socket>`
-* Save the catabase with `save`
+* Save the database with `save`
 * Copy the rdb file
 
 # Setup webservice to query the database
