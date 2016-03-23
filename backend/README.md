@@ -49,3 +49,19 @@ event_vals:<event_id> set(hashed_values)
 val:<hashed_value> value(value)
 ```
 
+## import\_auth
+
+``` python
+<authkey> value(<org_id>)
+```
+
+## cache\_attributes
+
+``` python
+uuid_id hash(<event_uuid>: <event_id>)
+<orgid>:<hashed_value> set(event_uuids)  # if the sharing is limited
+<hashed_value> set(event_uuids)  # if the sharing isn't limited
+```
+
+
+
