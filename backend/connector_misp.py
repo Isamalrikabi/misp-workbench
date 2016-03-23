@@ -21,11 +21,62 @@ class MispMySQLConnector(object):
         metadata = MetaData()
         metadata.reflect(bind=engine)
         self.connection = engine.connect()
-        self.events = Table("events", metadata, autoload=True)
-        self.users = Table("users", metadata, autoload=True)
         self.attributes = Table("attributes", metadata, autoload=True)
+        self.events = Table("events", metadata, autoload=True)
+        self.organisations = Table("organisations", metadata, autoload=True)
+        self.threat_levels = Table("threat_levels", metadata, autoload=True)
+        self.users = Table("users", metadata, autoload=True)
+
+        self.tags = Table("tags", metadata, autoload=True)
+        self.event_tags = Table("event_tags", metadata, autoload=True)
 
         self.r = StrictRedis(unix_socket_path=redis_socket)
+
+    # ####### Full import no respect of ACL ########
+
+    def import_table(self, table):
+        p = self.r.pipeline(False)
+        tab_name = table.name
+        for row in self.connection.execute(select([table])):
+            p.sadd(tab_name, row['id'])
+            p.hmset('{}:{}'.format(tab_name[:-1], row['id']), dict(row))
+        p.execute()
+
+    def import_all_tables(self):
+        # Mass import of everything
+        self.import_table(self.attributes)
+        self.import_table(self.events)
+        self.import_table(self.organisations)
+        self.import_table(self.threat_levels)
+        self.import_table(self.users)
+        # Specific import
+        p = self.r.pipeline(False)
+        tag_ids = {}
+        for row in self.connection.execute(select([self.tags])):
+            tag_ids[row['id']] = row['name']
+            p.sadd('tags', row['name'])
+        p.execute()
+        p = self.r.pipeline(False)
+        for row in self.connection.execute(select([self.event_tags])):
+            tag_name = tag_ids[row['tag_id']]
+            p.sadd('event:{}:tags'.format(row['event_id']), tag_name)
+            p.sadd('{}:events'.format(tag_name), row['event_id'])
+        p.execute()
+        # Create usefull helpers & correlations
+        p = self.r.pipeline(False)
+        for a in self.connection.execute(select([self.attributes])):
+            p.sadd('event_attrs:{}'.format(a['event_id']), a['id'])
+            # Hashing the values again avoid very long entries (snort/yara rules)
+            hash_value = SHA256.new(a['value1'].strip().lower()).hexdigest()
+            p.sadd(hash_value, a['event_id'])
+            p.sadd('event_vals:{}'.format(a['event_id']), hash_value)
+            p.set('val:{}'.format(hash_value), a['value1'])
+            if a['value2'].strip():
+                hash_value = SHA256.new(a['value2'].strip().lower()).hexdigest()
+                p.sadd(hash_value, a['event_id'])
+                p.sadd('event_vals:{}'.format(a['event_id']), hash_value)
+                p.set('val:{}'.format(hash_value), a['value2'])
+        p.execute()
 
     # ####### Other functions ########
 
