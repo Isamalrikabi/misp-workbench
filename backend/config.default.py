@@ -1,0 +1,5 @@
+user=''
+password=''
+host=''
+dbname=''
+redis_socket='/var/run/redis/redis.sock'

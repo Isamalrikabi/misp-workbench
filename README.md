@@ -10,15 +10,15 @@ If an event is only visible to one organisation, the users with an authorization
 
 # Usage
 
-The two main usecases are the following:
+The two main use cases are the following:
 
-* Running very fast hundreds or thoudand of queries against a MISP instance
-* Searching for indicators from an airgaped environment with no access to a remote MISP instance, or on an untrusted computer
+* Running very fast hundreds or thousands of queries against a MISP instance
+* Searching for indicators from an air gapped environment with no access to a remote MISP instance, or on an untrusted computer
 
 # Setup MISP export
 
-* System requirements to connect to MySQL: `apt-get install libmysqlclient-dev`
-* Install required python packages: `pip install -r backend/requirements_misp.txt`
+* System requirements to connect to MySQL: `sudo apt-get install libmysqlclient-dev`
+* Install required python packages: `sudo pip install -r backend/requirements_misp.txt`
 * Configure the connection to MySQL and redis in `backend/config.py`:
 
  ```python
@@ -35,7 +35,7 @@ redis_socket = '<path to the redis socket>'
 ## Optional if you want to copy the redis database to an other machine
 
 * Connect to redis: `redis-cli -s <path to the redis socket>`
-* Save the catabase with `save`
+* Save the database with `save`
 * Copy the rdb file
 
 # Setup webservice to query the database
@@ -50,7 +50,22 @@ redis_socket = '<path to the redis socket>'
 * Install required python packages: `pip install -r backend/requirements_webservice.txt`
 * Run `backend/webservice.py`
 
+# Install the client
+
+* In the directory /client
+
+ ```
+sudo python setup.py install
+ ```
+
+
 # Query the webservice
 
-* Install required python packages: `pip install -r client/requirements.txt`
-* Query the database using `client/search.py` (For help: `client/search.py -h`)
+* Install required python packages: `sudo pip install -r client/requirements.txt`
+* Make sure that the webservice is running
+* Query the database using `misp_fast_lookup -h`
+* Example : misp_fast_lookup -s '127.0.0.1' -k AUTHKEY
+* It is the same AUTHKEY that you use for PyMISP
+* The result will be the UUID of the MISP event
+
+
