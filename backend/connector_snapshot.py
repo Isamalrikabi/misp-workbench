@@ -3,6 +3,7 @@
 
 from redis import StrictRedis
 from config import redis_socket
+from Crypto.Hash import SHA256
 
 
 class SnapshotConnector(object):
@@ -10,7 +11,42 @@ class SnapshotConnector(object):
     def __init__(self):
         self.r = StrictRedis(unix_socket_path=redis_socket)
 
+    # ##### Values functions #####
+
+    def make_hashed_value(self, value):
+        return SHA256.new(value.strip().lower()).hexdigest()
+
+    def get_value_details(self, hashed_value):
+        attributes_ids = self.r.smembers('{}:attrs'.format(hashed_value))
+        return [self.r.hgetall('attribute:{}'.format(attrid)) for attrid in attributes_ids]
+
+    def get_value_digest(self, hashed_value):
+        attrids = self.r.smembers('{}:attrs'.format(hashed_value))
+        digest = [self.r.hmget('attribute:{}'.format(aid), 'value1', 'value2', 'comment') for aid in attrids]
+        values = set()
+        comments = set()
+        for v1, v2, comment in digest:
+            if comment:
+                comments.add(comment)
+            values.add(v1)
+            if v2:
+                values.add(v2)
+        return values, comments
+
+    def get_events_digest(self, hashed_value):
+        eids = self.r.smembers(hashed_value)
+        infos = sorted([self.get_event_digest(eid) for eid in eids], key=lambda tup: int(tup[0]))
+        return infos
+
+    # ##### Similarities #####
+
+    def intersection_details(self, key):
+        return [self.get_value_digest(hashed_value) for hashed_value in self.r.smembers(key)]
+
     # ##### Event functions #####
+
+    def get_event_digest(self, eid):
+        return eid, self.r.hmget('event:{}'.format(eid), 'info', 'date'), self.r.smembers('event:{}:tags'.format(eid))
 
     def merge(self, events):
         events = sorted(events, key=int)
@@ -62,9 +98,12 @@ class SnapshotConnector(object):
         self.r.expire(out_key, 300)
         return out_key
 
-    def groups_similarities(self, *groups):
-        return self.r.scard(self.intersection_groups(groups)), self.r.scard(self.merge_groups(groups))
+    def get_merged_group_key(self, group_name):
+        return self.merge(self.r.smembers(group_name))
 
-    def group_similarities(self, *groups):
-        merged = [self.merge(self.r.smembers(g)) for g in groups]
+    def groups_similarities(self, *merged_events):
+        return self.r.scard(self.intersection_groups(merged_events)), self.r.scard(self.merge_groups(merged_events))
+
+    def group_similarities(self, *group_names):
+        merged = [self.get_merged_group_key(g_name) for g_name in group_names]
         return self.groups_similarities(*merged)

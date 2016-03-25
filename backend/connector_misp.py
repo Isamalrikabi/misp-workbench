@@ -71,6 +71,7 @@ class MispMySQLConnector(object):
             p.sadd(hash_value, a['event_id'])
             p.sadd('event_vals:{}'.format(a['event_id']), hash_value)
             p.set('val:{}'.format(hash_value), a['value1'])
+            p.sadd('{}:attrs'.format(hash_value), a['id'])
             if a['value2'].strip():
                 hash_value = SHA256.new(a['value2'].strip().lower()).hexdigest()
                 p.sadd(hash_value, a['event_id'])
