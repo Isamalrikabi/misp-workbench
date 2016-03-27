@@ -14,6 +14,9 @@ class SnapshotConnector(object):
     # ##### Values functions #####
 
     def make_hashed_value(self, value):
+        '''
+            Hash the value to search in the database
+        '''
         return SHA256.new(value.strip().lower()).hexdigest()
 
     def get_value_details(self, hashed_value):
@@ -49,6 +52,10 @@ class SnapshotConnector(object):
         return eid, self.r.hmget('event:{}'.format(eid), 'info', 'date'), self.r.smembers('event:{}:tags'.format(eid))
 
     def merge(self, events):
+        '''
+            Merge a list of events into one set.
+            The key of the set is <event1>|<event2>|<event3>|...
+        '''
         events = sorted(events, key=int)
         keys = ['event_vals:{}'.format(eid) for eid in events]
         out_key = '|'.join(map(str, events))
@@ -57,6 +64,10 @@ class SnapshotConnector(object):
         return out_key
 
     def intersection(self, events):
+        '''
+            Keeps only the values in *all* the sets
+            The key of the set is <event1>&<event2>&<event3>&...
+        '''
         events = sorted(events, key=int)
         keys = ['event_vals:{}'.format(eid) for eid in events]
         out_key = '&'.join(map(str, events))
@@ -84,26 +95,19 @@ class SnapshotConnector(object):
         self.r.delete(name)
         self.r.srem('groups', name)
 
-    def merge_groups(self, groups):
-        groups = sorted(groups)
+    def merge_groups(self, group_names):
+        groups = sorted([self.merge(self.r.smembers(group_name)) for group_name in group_names])
         out_key = '|'.join(groups)
         self.r.sunionstore(out_key, *groups)
         self.r.expire(out_key, 300)
         return out_key
 
-    def intersection_groups(self, groups):
-        groups = sorted(groups)
+    def intersection_groups(self, group_names):
+        groups = sorted([self.intersection(self.r.smembers(group_name)) for group_name in group_names])
         out_key = '&'.join(groups)
         self.r.sinterstore(out_key, *groups)
         self.r.expire(out_key, 300)
         return out_key
 
-    def get_merged_group_key(self, group_name):
-        return self.merge(self.r.smembers(group_name))
-
-    def groups_similarities(self, *merged_events):
-        return self.r.scard(self.intersection_groups(merged_events)), self.r.scard(self.merge_groups(merged_events))
-
-    def group_similarities(self, *group_names):
-        merged = [self.get_merged_group_key(g_name) for g_name in group_names]
-        return self.groups_similarities(*merged)
+    def groups_similarities(self, *group_names):
+        return self.r.scard(self.intersection_groups(group_names)), self.r.scard(self.merge_groups(group_names))
