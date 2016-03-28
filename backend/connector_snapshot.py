@@ -9,7 +9,18 @@ from Crypto.Hash import SHA256
 class SnapshotConnector(object):
 
     def __init__(self):
-        self.r = StrictRedis(unix_socket_path=redis_socket)
+        self.r = StrictRedis(unix_socket_path=redis_socket, decode_responses=True)
+
+    # ##### Helpers web interface #####
+
+    def get_groups(self):
+        for g in sorted(self.r.smembers('groups')):
+            for eid in sorted(self.r.smembers(g), key=int, reverse=True):
+                yield g, eid, self.r.hmget('event:{}'.format(eid), 'info', 'date'), self.r.smembers('event:{}:tags'.format(eid))
+
+    def get_events(self):
+        for eid in sorted(self.r.smembers('events'), key=int, reverse=True):
+            yield eid, self.r.hmget('event:{}'.format(eid), 'info', 'date'), self.r.smembers('event:{}:tags'.format(eid))
 
     # ##### Values functions #####
 
@@ -97,6 +108,9 @@ class SnapshotConnector(object):
         return self.r.scard(self.intersection(events)), self.r.scard(self.merge(events))
 
     # ##### Group functions #####
+
+    def get_events_in_group(self, name):
+        return self.r.smembers(name)
 
     def make_group(self, name, *events):
         '''

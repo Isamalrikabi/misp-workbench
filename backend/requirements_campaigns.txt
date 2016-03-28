@@ -1,0 +1,4 @@
+pycrypto
+redis
+flask
+flask-bootstrap

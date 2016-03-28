@@ -1,0 +1,38 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Groups{% endblock %}
+
+{% block navbar %}
+<div class="navbar navbar-fixed-top">
+  <!-- ... -->
+</div>
+{% endblock %}
+
+{% block content %}
+  <h1>All groups</h1>
+
+<form action="merged_groups" method=post>
+<input type=submit value=Merge>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Group</th>
+            <th>Event ID</th>
+            <th>Info</th>
+            <th>Date</th>
+            <th>Tags</th>
+        <tr>
+    </thead>
+    <tbody>
+        {% for group in groups %}
+        <tr>
+            <td><input type=checkbox name=to_merge value="{{ group.group }}">{{ group.group }}</td>
+            <td>{{ group.eid }}</td>
+            <td>{{ group.info }}</td>
+            <td>{{ group.date }}</td>
+            <td>{{ group.tags }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</form>
+{% endblock %}

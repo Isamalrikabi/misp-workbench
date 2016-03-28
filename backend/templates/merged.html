@@ -1,0 +1,54 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Merged{% endblock %}
+
+{% block navbar %}
+<div class="navbar navbar-fixed-top">
+  <!-- ... -->
+</div>
+{% endblock %}
+
+{% block content %}
+  <h1>Merge details</h1>
+
+<h2>{{ correlations }} out of {{ total }} attributes are the same in the following events:</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Event ID</th>
+            <th>Info</th>
+            <th>Date</th>
+            <th>Tags</th>
+        <tr>
+    </thead>
+    <tbody>
+        {% for event in event_digests %}
+        <tr>
+            <td>{{ event[0] }}</td>
+            <td>{{ event[1][0] }}</td>
+            <td>{{ event[1][1] }}</td>
+            <td>{{ event[2] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<h2>Attributes in the merged events:</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Value</th>
+            <th>Comment</th>
+        <tr>
+    </thead>
+    <tbody>
+        {% for attr in attr_digests %}
+        <tr>
+            <td>{{ attr[0] }}</td>
+            <td>{{ attr[1] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+{% endblock %}
