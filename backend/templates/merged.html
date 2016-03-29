@@ -11,6 +11,10 @@
   <h1>Merge details</h1>
 
 <h2>{{ correlations }} out of {{ total }} attributes are the same in the following events:</h2>
+<form action="groups" method=post>
+    <input type="text" name="new_group_name">
+    <input type=submit value="Create group">
+
 <table class="table">
     <thead>
         <tr>
@@ -23,7 +27,7 @@
     <tbody>
         {% for event in event_digests %}
         <tr>
-            <td>{{ event[0] }}</td>
+            <td><input type=checkbox name=to_merge value="{{ event[0] }}">{{ event[0] }}</td>
             <td>{{ event[1][0] }}</td>
             <td>{{ event[1][1] }}</td>
             <td>{{ event[2] }}</td>
@@ -31,6 +35,7 @@
         {% endfor %}
     </tbody>
 </table>
+</form>
 <h2>Attributes in the merged events:</h2>
 <table class="table">
     <thead>

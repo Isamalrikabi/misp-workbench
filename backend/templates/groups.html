@@ -12,10 +12,11 @@
 
 <form action="merged_groups" method=post>
 <input type=submit value=Merge>
+{% for group, event_digests in events_in_groups.items() %}
 <table class="table">
+    <caption><h3>{{ group }} <input type=checkbox name=to_merge value="{{ group }}"></h3></caption>
     <thead>
         <tr>
-            <th>Group</th>
             <th>Event ID</th>
             <th>Info</th>
             <th>Date</th>
@@ -23,16 +24,16 @@
         <tr>
     </thead>
     <tbody>
-        {% for group in groups %}
+        {% for event in event_digests %}
         <tr>
-            <td><input type=checkbox name=to_merge value="{{ group.group }}">{{ group.group }}</td>
-            <td>{{ group.eid }}</td>
-            <td>{{ group.info }}</td>
-            <td>{{ group.date }}</td>
-            <td>{{ group.tags }}</td>
+            <td>{{ event[0] }}</td>
+            <td>{{ event[1][0] }}</td>
+            <td>{{ event[1][1] }}</td>
+            <td>{{ event[2] }}</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+{% endfor %}
 </form>
 {% endblock %}

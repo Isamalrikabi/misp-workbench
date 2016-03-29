@@ -46,17 +46,16 @@ def merged_groups_details():
                            attr_digests=attr_digests)
 
 
-@app.route('/groups', methods=['GET'])
+@app.route('/groups', methods=['GET', 'POST'])
 def groups_list():
-    groups = []
+    if request.form.getlist("to_merge") and request.form.get('new_group_name'):
+        connector.make_group(request.form.get('new_group_name'), *request.form.getlist("to_merge"))
+    events_in_groups = {}
     for group_details in connector.get_groups():
-        t = {'group': group_details[0], 'eid': int(group_details[1])}
-        t.update(dict(zip(['info', 'date'], group_details[2])))
-        t['tags'] = ', '.join(group_details[3])
-        groups.append(t)
-    return render_template('groups.html', groups=groups)
-
-
+        if not events_in_groups.get(group_details[0]):
+            events_in_groups[group_details[0]] = []
+        events_in_groups[group_details[0]].append(group_details[1:])
+    return render_template('groups.html', events_in_groups=events_in_groups)
 
 
 if __name__ == '__main__':
