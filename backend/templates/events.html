@@ -24,10 +24,10 @@
     <tbody>
         {% for event in events %}
         <tr>
-            <td><input type=checkbox name=to_merge value="{{ event.eid }}">{{ event.eid }}</td>
+            <td><input type=checkbox name=to_merge value="{{ event.eid }}"> {{ event.eid }}</td>
             <td>{{ event.info }}</td>
             <td>{{ event.date }}</td>
-            <td>{{ event.tags }}</td>
+            <td>{{ ', '.join(event.tags) }}</td>
         </tr>
         {% endfor %}
     </tbody>

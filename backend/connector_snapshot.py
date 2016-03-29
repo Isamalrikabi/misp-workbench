@@ -13,14 +13,20 @@ class SnapshotConnector(object):
 
     # ##### Helpers web interface #####
 
-    def get_groups(self):
-        for g in sorted(self.r.smembers('groups')):
-            for eid in sorted(self.r.smembers(g), key=int, reverse=True):
-                yield g, eid, self.r.hmget('event:{}'.format(eid), 'info', 'date'), self.r.smembers('event:{}:tags'.format(eid))
+    def get_groups(self, groups=None):
+        if not groups:
+            grps = sorted(self.r.smembers('groups'))
+        else:
+            grps = sorted(groups)
+        return [(g, self.get_events(self.r.smembers(g))) for g in grps]
 
-    def get_events(self):
-        for eid in sorted(self.r.smembers('events'), key=int, reverse=True):
-            yield eid, self.r.hmget('event:{}'.format(eid), 'info', 'date'), self.r.smembers('event:{}:tags'.format(eid))
+    def get_events(self, events=None):
+        if not events:
+            eids = sorted(self.r.smembers('events'), key=int, reverse=True)
+        else:
+            print(events)
+            eids = sorted(events, key=int, reverse=True)
+        return [self.get_event_digest(eid) for eid in eids]
 
     # ##### Values functions #####
 
@@ -75,7 +81,9 @@ class SnapshotConnector(object):
         '''
             Returns info and date of the event
         '''
-        return eid, self.r.hmget('event:{}'.format(eid), 'info', 'date'), self.r.smembers('event:{}:tags'.format(eid))
+        to_return = {'eid': eid, 'tags': self.r.smembers('event:{}:tags'.format(eid))}
+        to_return.update(dict(zip(['info', 'date'], self.r.hmget('event:{}'.format(eid), 'info', 'date'))))
+        return to_return
 
     def merge(self, events):
         '''

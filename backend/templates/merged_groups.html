@@ -11,7 +11,7 @@
   <h1>Merge details</h1>
 
 <h2>{{ correlations }} out of {{ total }} attributes are the same in the following groups:</h2>
-{% for group, event_digests in events_in_groups.items() %}
+{% for group, event_digests in events_in_groups %}
 <table class="table">
     <caption><h3>{{ group }}</h3></caption>
     <thead>
@@ -25,10 +25,10 @@
     <tbody>
         {% for event in event_digests %}
         <tr>
-            <td>{{ event[0] }}</td>
-            <td>{{ event[1][0] }}</td>
-            <td>{{ event[1][1] }}</td>
-            <td>{{ event[2] }}</td>
+            <td>{{ event.eid }}</td>
+            <td>{{ event.info }}</td>
+            <td>{{ event.date }}</td>
+            <td>{{ ', '.join(event.tags) }}</td>
         </tr>
         {% endfor %}
     </tbody>
