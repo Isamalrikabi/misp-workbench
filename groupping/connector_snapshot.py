@@ -63,9 +63,7 @@ class SnapshotConnector(object):
         '''
             Returns digests of events the value is listed in.
         '''
-        eids = self.r.smembers(hashed_value)
-        infos = sorted([self.get_event_digest(eid) for eid in eids], key=lambda tup: int(tup[0]))
-        return infos
+        return [self.get_event_digest(eid) for eid in self.r.smembers(hashed_value)]
 
     # ##### Keys functions #####
 
@@ -91,10 +89,12 @@ class SnapshotConnector(object):
             The key of the set is <event1>|<event2>|<event3>|...
         '''
         events = sorted(events, key=int)
-        keys = ['event_vals:{}'.format(eid) for eid in events]
         out_key = '|'.join(map(str, events))
-        self.r.sunionstore(out_key, *keys)
-        self.r.expire(out_key, 300)
+        if not self.r.exists(out_key):
+            p = self.r.pipeline(False)
+            p.sunionstore(out_key, *['event_vals:{}'.format(eid) for eid in events])
+            p.expire(out_key, 300)
+            p.execute()
         return out_key
 
     def intersection(self, events):
@@ -103,10 +103,12 @@ class SnapshotConnector(object):
             The key of the set is <event1>&<event2>&<event3>&...
         '''
         events = sorted(events, key=int)
-        keys = ['event_vals:{}'.format(eid) for eid in events]
         out_key = '&'.join(map(str, events))
-        self.r.sinterstore(out_key, *keys)
-        self.r.expire(out_key, 300)
+        if not self.r.exists(out_key):
+            p = self.r.pipeline(False)
+            p.sinterstore(out_key, *['event_vals:{}'.format(eid) for eid in events])
+            p.expire(out_key, 300)
+            p.execute()
         return out_key
 
     def events_similarities(self, *events):
@@ -151,8 +153,11 @@ class SnapshotConnector(object):
         '''
         groups = sorted([self.merge(self.r.smembers(group_name)) for group_name in group_names])
         out_key = '|'.join(groups)
-        self.r.sunionstore(out_key, *groups)
-        self.r.expire(out_key, 300)
+        if not self.r.exists(out_key):
+            p = self.r.pipeline(False)
+            p.sunionstore(out_key, *groups)
+            p.expire(out_key, 300)
+            p.execute()
         return out_key
 
     def intersection_groups(self, group_names):
@@ -163,8 +168,11 @@ class SnapshotConnector(object):
 
         groups = sorted([self.intersection(self.r.smembers(group_name)) for group_name in group_names])
         out_key = '&'.join(groups)
-        self.r.sinterstore(out_key, *groups)
-        self.r.expire(out_key, 300)
+        if not self.r.exists(out_key):
+            p = self.r.pipeline(False)
+            p.sinterstore(out_key, *groups)
+            p.expire(out_key, 300)
+            p.execute()
         return out_key
 
     def groups_similarities(self, *group_names):
