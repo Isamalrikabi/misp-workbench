@@ -43,6 +43,13 @@ class SnapshotConnector(object):
         attributes_ids = self.r.smembers('{}:attrs'.format(hashed_value))
         return [self.r.hgetall('attribute:{}'.format(attrid)) for attrid in attributes_ids]
 
+    def get_all_value_digest(self):
+        p = self.r.pipeline(False)
+        attrs = [self.r.hmget('attribute:{}'.format(attrid), 'event_id', 'value1', 'value2', 'comment')
+                 for attrid in self.r.smembers('attributes')]
+        p.execute()
+        return attrs
+
     def get_value_digest(self, hashed_value):
         '''
             Returns value1 & 2 and comment, deduplicate
