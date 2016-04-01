@@ -24,7 +24,6 @@ class SnapshotConnector(object):
         if not events:
             eids = sorted(self.r.smembers('events'), key=int, reverse=True)
         else:
-            print(events)
             eids = sorted(events, key=int, reverse=True)
         return [self.get_event_digest(eid) for eid in eids]
 
@@ -172,8 +171,9 @@ class SnapshotConnector(object):
             Keeps only the values in *all* the sets
             The key of the set is <group1>&<group2>&<group3>&...
         '''
-
-        groups = sorted([self.intersection(self.r.smembers(group_name)) for group_name in group_names])
+        if len(group_names) == 1:
+            return self.intersection(self.r.smembers(group_names[0]))
+        groups = sorted([self.merge(self.r.smembers(group_name)) for group_name in group_names])
         out_key = '&'.join(groups)
         if not self.r.exists(out_key):
             p = self.r.pipeline(False)

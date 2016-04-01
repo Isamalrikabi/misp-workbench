@@ -10,6 +10,9 @@
 {% block content %}
   <h1>All groups</h1>
 
+<h2>Select one single group to see if there are intesecting values.
+Select more than one group to see the values intersecting between all the groups</h2>
+
 <form action="merged_groups" method=post>
 <input type=submit value=Merge>
 {% for group, event_digests in events_in_groups %}
