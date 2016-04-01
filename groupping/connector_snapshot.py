@@ -145,6 +145,10 @@ class SnapshotConnector(object):
         self.r.sadd(name, *events)
         self.r.sadd('groups', name)
 
+    def delete_all_groups(self):
+        for g in self.r.smembers('groups'):
+            self.del_group(g)
+
     def del_group(self, name):
         '''
             Delete a group of events

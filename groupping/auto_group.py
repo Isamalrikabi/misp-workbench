@@ -31,7 +31,7 @@ def adversary_groups(galaxy):
             for syn in group.get('synonyms'):
                 eids.update(search(syn))
         if eids:
-            connector.update_group(group['group'], *eids)
+            connector.update_group('adversaries:{}'.format(group['group']), *eids)
 
 
 def tools(galaxy):
@@ -43,7 +43,7 @@ def tools(galaxy):
             for syn in tool.get('synonyms'):
                 eids.update(search(syn))
         if eids:
-            connector.update_group(tool['value'], *eids)
+            connector.update_group('tools:{}'.format(tool['value']), *eids)
 
 
 if __name__ == '__main__':

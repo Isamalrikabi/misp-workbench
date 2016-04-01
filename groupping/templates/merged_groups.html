@@ -8,31 +8,50 @@
 {% endblock %}
 
 {% block content %}
+<div class="container">
   <h1>Merge details</h1>
 
 <h2>{{ correlations }} out of {{ total }} attributes are the same in the following groups:</h2>
-{% for group, event_digests in events_in_groups %}
-<table class="table">
-    <caption><h3>{{ group }}</h3></caption>
-    <thead>
-        <tr>
-            <th>Event ID</th>
-            <th>Info</th>
-            <th>Date</th>
-            <th>Tags</th>
-        <tr>
-    </thead>
-    <tbody>
-        {% for event in event_digests %}
-        <tr>
-            <td>{{ event.eid }}</td>
-            <td>{{ event.info }}</td>
-            <td>{{ event.date }}</td>
-            <td>{{ ', '.join(event.tags) }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+{% for type, eg in events_in_groups.items() %}
+    {% if type %}
+        <h2>{{ type }}</h2>
+    {% else %}
+        <h2>User Created</h2>
+    {% endif %}
+
+    <div class="panel-group" id="accordion">
+        <div class="panel panel-default">
+            {% for group, event_digests in eg %}
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ quote(group) }}">{{ group }}</a>
+                </h4>
+            </div>
+            <div id="collapse{{ quote(group) }}" class="panel-collapse collapse">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Event ID</th>
+                            <th>Info</th>
+                            <th>Date</th>
+                            <th>Tags</th>
+                        <tr>
+                    </thead>
+                    <tbody>
+                        {% for event in event_digests %}
+                        <tr>
+                            <td>{{ event.eid }}</td>
+                            <td>{{ event.info }}</td>
+                            <td>{{ event.date }}</td>
+                            <td>{{ ', '.join(event.tags) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 {% endfor %}
 <h2>Attributes in the merged groups:</h2>
 <table class="table">
@@ -52,6 +71,6 @@
     </tbody>
 </table>
 
-
+</div>
 
 {% endblock %}

@@ -2,3 +2,4 @@ pycrypto
 redis
 flask
 flask-bootstrap
+whoosh
