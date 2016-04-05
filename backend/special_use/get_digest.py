@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from connector_misp import MispMySQLConnector
+from ..connector import MispMySQLConnector
 import csv
 import sys
 import datetime

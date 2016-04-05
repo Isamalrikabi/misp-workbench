@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from flask import Flask, json, request
-from connector_webservice import MispRedisConnector
+from connector import MispRedisConnector
 
 
 app = Flask(__name__)
@@ -15,7 +15,7 @@ connector = MispRedisConnector()
 
 class SetEncoder(json.JSONEncoder):
     def default(self, obj):
-        if type(obj) == type(set()):
+        if isinstance(obj, set):
             return list(obj)
         return json.JSONEncoder.default(self, obj)
 

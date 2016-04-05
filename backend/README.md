@@ -1,6 +1,28 @@
-# Introduction
+MySQL export
+============
 
 This code aims to export data from the MySQL database into redis
+
+# Requirements
+
+* System requirements to connect to MySQL: `sudo apt-get install libmysqlclient-dev`
+* Install required python packages: `sudo pip install -r requirements_misp.txt`
+* Configure the connection to MySQL and redis in `config.py`:
+
+    ```python
+        user = '<MySQL username>'
+        password = '<MySQL user password>'
+        host = '<MySQL host>'
+        dbname = '<MySQL database name>'
+        redis_socket = '<path to the redis socket>'
+    ```
+* Run a redis server listening on the socket you defined in the config file
+
+## Optional if you want to copy the redis database to an other machine
+
+* Connect to redis: `redis-cli -s <path to the redis socket>`
+* Save the database with `save`
+* Copy the rdb file
 
 
 # Keys created in the Redis database

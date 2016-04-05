@@ -6,3 +6,8 @@ build/
 dist/
 
 *.swp
+
+dump.rdb
+indexdir
+
+redis.conf
