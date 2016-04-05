@@ -3,7 +3,7 @@
 
 from flask import Flask, request, render_template
 from flask_bootstrap import Bootstrap
-from connector_snapshot import SnapshotConnector
+from connector import SnapshotConnector
 import string
 
 app = Flask(__name__)

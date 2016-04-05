@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from connector_snapshot import SnapshotConnector
+from connector import SnapshotConnector
 from whoosh.index import create_in, open_dir
 from whoosh.fields import NGRAMWORDS, ID, Schema
 from whoosh.qparser import QueryParser

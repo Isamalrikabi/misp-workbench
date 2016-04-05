@@ -4,7 +4,7 @@
 import os
 import fnmatch
 import json
-from connector_snapshot import SnapshotConnector
+from connector import SnapshotConnector
 from fti import search
 
 
