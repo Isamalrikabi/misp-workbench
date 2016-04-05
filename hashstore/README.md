@@ -1,4 +1,4 @@
-Bloom filter fast lookup
+Hashstore fast lookup
 ========================
 
 
@@ -23,7 +23,7 @@ The two main use cases are the following:
 
 # Requirements
 
-* access to the redis database created by `backend/make_bloomfilters.py`
+* access to the redis database created by `backend/make_hashstore.py`
 * python packages: `pip install -r requirements.txt`
 
 # Setup webservice to query the database
