@@ -7,38 +7,57 @@
 </div>
 {% endblock %}
 
+{% block scripts %}
+    {{ super() }}
+    <script>
+    $("#checkAll").click(function () {
+        $(".check").prop('checked', $(this).prop('checked'));
+    });
+    </script>
+{% endblock %}
+
 {% block content %}
 <div class="container">
   <h1>Merge details</h1>
 
 <h2>{{ correlations }} out of {{ total }} attributes are the same in the following events:</h2>
-<form action="groups" method=post>
-    <input type="text" name="new_group_name">
-    <input type=submit value="Create group">
+<form class="form-inline" role="form" action="groups" method=post>
+    <div class="form-group">
+        <input type="text" class="form-control" name="new_group_name" id=new_group_name placeholder="Enter new group name">
+    </div>
+    <button type="submit" class="btn btn-default">Create group</button>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Event ID</th>
-            <th>Info</th>
-            <th>Date</th>
-            <th>Tags</th>
-        <tr>
-    </thead>
-    <tbody>
-        {% for event in event_digests %}
-        <tr>
-            <td><input type=checkbox name=to_merge value="{{ event.eid }}"> {{ event.eid }}</td>
-            <td>{{ event.info }}</td>
-            <td>{{ event.date }}</td>
-            <td>{{ ', '.join(event.tags) }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <div class="checkbox">
+        <label><input type="checkbox" class="check" id="checkAll"> Check All</label>
+    </div>
+
+    <table class="table table-condensed">
+        <thead>
+            <tr>
+                <th>Event ID</th>
+                <th>Info</th>
+                <th>Date</th>
+                <th>Tags</th>
+            <tr>
+        </thead>
+        <tbody>
+            {% for event in event_digests %}
+            <tr>
+                <td>
+                    <div class="checkbox">
+                        <label><input class="check" type="checkbox" name=to_merge value="{{ event.eid }}">&nbsp;{{ event.eid }}</label>
+                    </div>
+                </td>
+                <td>{{ event.info }}</td>
+                <td>{{ event.date }}</td>
+                <td>{{ ', '.join(event.tags) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </form>
 <h2>Attributes in the merged events:</h2>
-<table class="table">
+<table class="table table-condensed">
     <thead>
         <tr>
             <th>Value</th>

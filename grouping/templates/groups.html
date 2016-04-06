@@ -7,6 +7,15 @@
 </div>
 {% endblock %}
 
+{% block scripts %}
+    {{ super() }}
+    <script>
+    $("#unCheckAll").click(function () {
+        $(".check").removeAttr('checked');
+    });
+    </script>
+{% endblock %}
+
 {% block content %}
 <div class="container">
   <h1>All groups</h1>
@@ -14,8 +23,12 @@
 <h2>Select one single group to see if there are intesecting values.
 Select more than one group to see the values intersecting between all the groups</h2>
 
-<form action="merged_groups" method=post>
-<input type=submit value=Merge>
+<form class="form-inline" role="form" action="merged_groups" method=post>
+<button type="submit" class="btn btn-default">Merge groups</button>
+<div class="checkbox">
+    <button class="btn" type="button" id="unCheckAll">Un-Check All</button>
+</div>
+
 {% for type, eg in events_in_groups.items() %}
     {% if type %}
         <h2>{{ type }}</h2>
@@ -28,15 +41,19 @@ Select more than one group to see the values intersecting between all the groups
             <div class="panel-heading">
                 <h4 class="panel-title">
                     <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ quote(group) }}">{{ group }}</a>
-                    {% if type %}
-                        <input type=checkbox name=to_merge value="{{ type }}:{{ group }}">
-                    {% else %}
-                        <input type=checkbox name=to_merge value="{{ group }}">
-                    {% endif %}
+                    <div class="checkbox">
+                        <label>
+                            {% if type %}
+                                <input class="check" type="checkbox" name=to_merge value="{{ type }}:{{ group }}">
+                            {% else %}
+                                <input class="check" type="checkbox" name=to_merge value="{{ group }}">
+                            {% endif %}
+                        </label>
+                    </div>
                 </h4>
             </div>
             <div id="collapse{{ quote(group) }}" class="panel-collapse collapse">
-                <table class="table">
+                <table class="table table-condensed">
                 <thead>
                     <tr>
                         <th>Event ID</th>

@@ -7,6 +7,15 @@
 </div>
 {% endblock %}
 
+{% block scripts %}
+    {{ super() }}
+    <script>
+    $("#checkAll").click(function () {
+        $(".check").prop('checked', $(this).prop('checked'));
+    });
+    </script>
+{% endblock %}
+
 {% block content %}
 <div class="container">
   <h1>Merge details</h1>
@@ -28,7 +37,7 @@
                 </h4>
             </div>
             <div id="collapse{{ quote(group) }}" class="panel-collapse collapse">
-                <table class="table">
+                <table class="table table-condensed">
                     <thead>
                         <tr>
                             <th>Event ID</th>
@@ -54,7 +63,7 @@
     </div>
 {% endfor %}
 <h2>Attributes in the merged groups:</h2>
-<table class="table">
+<table class="table table-condensed">
     <thead>
         <tr>
             <th>Value</th>
