@@ -4,6 +4,7 @@
 from flask import Flask, request, render_template
 from flask_bootstrap import Bootstrap
 from connector import SnapshotConnector
+from fti import search
 import string
 
 app = Flask(__name__)
@@ -17,14 +18,19 @@ def events_list():
     return render_template('events.html', events=connector.get_events())
 
 
+def merge_events(eids):
+    correlations, total = connector.events_similarities(*eids)
+    attr_digests = [('\n'.join(attr[0]), '\n'.join(attr[1]))
+                    for attr in connector.key_values_digests(connector.intersection(eids))]
+    return render_template('merged.html', correlations=correlations,
+                           total=total, event_digests=connector.get_events(eids),
+                           attr_digests=attr_digests)
+
+
 @app.route('/merged', methods=['POST'])
 def merged_details():
     to_merge = request.form.getlist("to_merge")
-    correlations, total = connector.events_similarities(*to_merge)
-    attr_digests = [('\n'.join(attr[0]), '\n'.join(attr[1])) for attr in connector.key_values_digests(connector.intersection(to_merge))]
-    return render_template('merged.html', correlations=correlations,
-                           total=total, event_digests=connector.get_events(to_merge),
-                           attr_digests=attr_digests)
+    return merge_events(to_merge)
 
 
 @app.route('/merged_groups', methods=['POST'])
@@ -62,6 +68,14 @@ def groups_list():
     if request.form.getlist("to_merge") and request.form.get('new_group_name'):
         connector.make_group(request.form.get('new_group_name'), *request.form.getlist("to_merge"))
     return render_template('groups.html', events_in_groups=sort_groups(connector), quote=strip_char)
+
+
+@app.route('/search', methods=['GET', 'POST'])
+def search_events():
+    if request.form.get('query'):
+        eids = search(request.form.get('query'))
+        return merge_events(eids)
+    return render_template('search.html')
 
 
 if __name__ == '__main__':

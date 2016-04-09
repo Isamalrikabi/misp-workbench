@@ -1,0 +1,22 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Merged{% endblock %}
+
+{% block navbar %}
+<div class="navbar navbar-fixed-top">
+  <!-- ... -->
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>Merge details</h1>
+
+<h2>{{ correlations }} out of {{ total }} attributes are the same in the following events:</h2>
+<form class="form-inline" role="form" action="search" method=post>
+    <div class="form-group">
+        <input type="text" class="form-control" name="query" id=query placeholder="Search a thing ">
+    </div>
+    <button type="submit" class="btn btn-default">Search</button>
+</form>
+</div>
+{% endblock %}
