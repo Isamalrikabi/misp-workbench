@@ -20,66 +20,64 @@
 <div class="container">
   <h1>Merge details</h1>
 
-<h2>{{ correlations }} out of {{ total }} attributes are the same in the following groups:</h2>
-{% for type, eg in events_in_groups.items() %}
-    {% if type %}
-        <h2>{{ type }}</h2>
-    {% else %}
-        <h2>User Created</h2>
-    {% endif %}
+    <h2>{{ correlations }} out of {{ total }} attributes are the same in the following groups:</h2>
+    {% for type, eg in events_in_groups.items() %}
+        {% if type %}
+            <h2>{{ type }}</h2>
+        {% else %}
+            <h2>User Created</h2>
+        {% endif %}
 
-    <div class="panel-group" id="accordion">
-        <div class="panel panel-default">
-            {% for group, event_digests in eg %}
-            <div class="panel-heading">
-                <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ quote(group) }}">{{ group }}</a>
-                </h4>
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-default">
+                {% for group, event_digests in eg %}
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ quote(group) }}">{{ group }}</a>
+                    </h4>
+                </div>
+                <div id="collapse{{ quote(group) }}" class="panel-collapse collapse">
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Event ID</th>
+                                <th>Info</th>
+                                <th>Date</th>
+                                <th>Tags</th>
+                            <tr>
+                        </thead>
+                        <tbody>
+                            {% for event in event_digests %}
+                            <tr>
+                                <td>{{ event.eid }}</td>
+                                <td>{{ event.info }}</td>
+                                <td>{{ event.date }}</td>
+                                <td>{{ ', '.join(event.tags) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endfor %}
             </div>
-            <div id="collapse{{ quote(group) }}" class="panel-collapse collapse">
-                <table class="table table-condensed">
-                    <thead>
-                        <tr>
-                            <th>Event ID</th>
-                            <th>Info</th>
-                            <th>Date</th>
-                            <th>Tags</th>
-                        <tr>
-                    </thead>
-                    <tbody>
-                        {% for event in event_digests %}
-                        <tr>
-                            <td>{{ event.eid }}</td>
-                            <td>{{ event.info }}</td>
-                            <td>{{ event.date }}</td>
-                            <td>{{ ', '.join(event.tags) }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% endfor %}
         </div>
-    </div>
-{% endfor %}
-<h2>Attributes in the merged groups:</h2>
-<table class="table table-condensed">
-    <thead>
-        <tr>
-            <th>Value</th>
-            <th>Comment</th>
-        <tr>
-    </thead>
-    <tbody>
-        {% for attr in attr_digests %}
-        <tr>
-            <td>{{ attr[0] }}</td>
-            <td>{{ attr[1] }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
+    {% endfor %}
+    <h2>Attributes in the merged groups:</h2>
+    <table class="table table-condensed">
+        <thead>
+            <tr>
+                <th>Value</th>
+                <th>Comment</th>
+            <tr>
+        </thead>
+        <tbody>
+            {% for attr in attr_digests %}
+            <tr>
+                <td>{{ attr[0] }}</td>
+                <td>{{ attr[1] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
-
 {% endblock %}
