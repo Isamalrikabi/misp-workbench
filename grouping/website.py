@@ -3,14 +3,34 @@
 
 from flask import Flask, request, render_template
 from flask_bootstrap import Bootstrap
+from flask_nav import Nav
+from flask_nav.elements import Navbar, View
 from connector import SnapshotConnector
 from fti import search
 import string
+
+nav = Nav()
+
+
+@nav.navigation()
+def mynavbar():
+    return Navbar(
+        'Event grouping interface',
+        View('Events', 'events_list'),
+        View('Groups', 'groups_list'),
+        View('Full text search', 'search_events'),
+    )
 
 app = Flask(__name__)
 Bootstrap(app)
 app.config['BOOTSTRAP_SERVE_LOCAL'] = True
 app.debug = True
+nav.init_app(app)
+
+
+@app.route('/', methods=['GET'])
+def index():
+    return events_list()
 
 
 @app.route('/events', methods=['GET'])

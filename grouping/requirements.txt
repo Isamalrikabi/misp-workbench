@@ -3,3 +3,4 @@ redis
 flask
 flask-bootstrap
 whoosh
+Flask-Nav
