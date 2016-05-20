@@ -15,9 +15,9 @@ class MispRedisConnector(object):
 
     def __init__(self):
         if redis_socket:
-            self.r = StrictRedis(unix_socket_path=redis_socket)
+            self.r = StrictRedis(unix_socket_path=redis_socket, decode_responses=True)
         else:
-            self.r = StrictRedis(host=redis_host, port=redis_port)
+            self.r = StrictRedis(host=redis_host, port=redis_port, decode_responses=True)
 
     def search(self, authkey, values=None, hash_values=None, return_eid=False, quiet=False):
         if isinstance(values, list):
