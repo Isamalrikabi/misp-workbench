@@ -3,13 +3,21 @@
 
 from Crypto.Hash import SHA256
 from redis import StrictRedis
-from config import redis_socket
+try:
+    from config import redis_socket
+    if not redis_socket:
+        raise ImportError
+except:
+    from config import redis_host, redis_port
 
 
 class MispRedisConnector(object):
 
     def __init__(self):
-        self.r = StrictRedis(unix_socket_path=redis_socket)
+        if redis_socket:
+            self.r = StrictRedis(unix_socket_path=redis_socket, decode_responses=True)
+        else:
+            self.r = StrictRedis(host=redis_host, port=redis_port, decode_responses=True)
 
     def search(self, authkey, values=None, hash_values=None, return_eid=False, quiet=False):
         if isinstance(values, list):
