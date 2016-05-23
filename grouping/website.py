@@ -6,6 +6,7 @@ from flask_bootstrap import Bootstrap
 from flask_nav import Nav
 from flask_nav.elements import Navbar, View
 from connector import SnapshotConnector
+from pecorrelator import PECorrelator
 from fti import search
 import string
 
@@ -19,6 +20,7 @@ def mynavbar():
         View('Events', 'events_list'),
         View('Groups', 'groups_list'),
         View('Full text search', 'search_events'),
+        View('Compilation Timestamps', 'pe_ts'),
     )
 
 app = Flask(__name__)
@@ -98,6 +100,36 @@ def search_events():
     return render_template('search.html')
 
 
+@app.route('/pe_timestamps/', defaults={'timestamp': None})
+@app.route('/pe_timestamps/<int:timestamp>', methods=['GET'])
+def pe_ts(timestamp=None):
+    if not timestamp:
+        timestamps = pe.get_timestamps()
+        return render_template('all_timestamps.html', timestamps=timestamps, timestamp=None)
+    else:
+        samples = pe.get_samples_timestamp(timestamp)
+        return render_template('all_timestamps.html', timestamp=timestamp, samples=samples)
+
+
+@app.route('/pe_sample_info/', defaults={'sha256': None})
+@app.route('/pe_sample_info/<sha256>', methods=['GET'])
+def pe_sample_info(sha256=None):
+    if not sha256:
+        samples = pe.get_all_samples()
+        s_details = [(s, pe.get_sample_info(s)) for s in samples]
+        keys = list(s_details[0][1].keys())
+        keys.remove('ssdeep')
+        keys.remove('md5')
+        keys.remove('path')
+        keys.remove('filename')
+        keys.remove('sha1')
+        return render_template('samples.html', samples=s_details, keys=keys)
+    else:
+        s_details = [(sha256, pe.get_sample_info(sha256))]
+        keys = list(s_details[0][1].keys())
+        return render_template('samples.html', samples=s_details, keys=keys)
+
 if __name__ == '__main__':
     connector = SnapshotConnector()
+    pe = PECorrelator()
     app.run()

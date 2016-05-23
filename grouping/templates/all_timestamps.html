@@ -1,0 +1,44 @@
+{% extends "main.html" %}
+{% block title %}All known PE compilation timestamps{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>Compilation timestamps</h1>
+
+    {% if timestamps %}
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Frequency</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ts, freq in timestamps %}
+                <tr>
+                    <td><a href="{{ url_for('pe_ts', timestamp=ts) }}">{{ ts }}</a></td>
+                    <td>{{ freq }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% elif timestamp %}
+        <h2> {{ timestamp }} </h2>
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>Sha256</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in samples %}
+                <tr>
+                    <td><a href="{{ url_for('pe_sample_info', sha256=s)}}">{{ s }}</a></td>
+                    <!-- TODO: Ass some more details on the samples on that page -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+{% endblock %}
