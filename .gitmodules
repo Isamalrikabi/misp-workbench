@@ -1,3 +1,9 @@
 [submodule "grouping/misp-galaxy"]
 	path = grouping/misp-galaxy
 	url = https://github.com/MISP/misp-galaxy.git
+[submodule "grouping/data-processing"]
+	path = grouping/data-processing
+	url = https://github.com/MISP/data-processing.git
+[submodule "grouping/ssdc"]
+	path = grouping/ssdc
+	url = https://github.com/CIRCL/ssdc.git
