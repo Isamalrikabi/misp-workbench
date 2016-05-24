@@ -9,6 +9,7 @@ from connector import SnapshotConnector
 from pecorrelator import PECorrelator
 from fti import search
 import string
+import datetime
 
 nav = Nav()
 
@@ -21,6 +22,11 @@ def mynavbar():
         View('Groups', 'groups_list'),
         View('Full text search', 'search_events'),
         View('Compilation Timestamps', 'pe_ts'),
+        View('Original Filenames', 'pe_original_filename'),
+        View('Samples', 'pe_sample_info'),
+        View('Imphahses', 'pe_imphash'),
+        View('Entrypoints', 'pe_entrypoint'),
+        View('Secnumbers', 'pe_secnumber'),
     )
 
 app = Flask(__name__)
@@ -104,7 +110,8 @@ def search_events():
 @app.route('/pe_timestamps/<int:timestamp>', methods=['GET'])
 def pe_ts(timestamp=None):
     if not timestamp:
-        timestamps = pe.get_timestamps()
+        print(pe.get_timestamps())
+        timestamps = [(t, datetime.datetime.fromtimestamp(int(t)).isoformat(), f) for t, f in pe.get_timestamps()]
         return render_template('all_timestamps.html', timestamps=timestamps, timestamp=None)
     else:
         samples = pe.get_samples_timestamp(timestamp)
@@ -128,6 +135,51 @@ def pe_sample_info(sha256=None):
         s_details = [(sha256, pe.get_sample_info(sha256))]
         keys = list(s_details[0][1].keys())
         return render_template('samples.html', samples=s_details, keys=keys)
+
+
+@app.route('/pe_original_filename/', defaults={'ofn': None})
+@app.route('/pe_original_filename/<ofn>', methods=['GET'])
+def pe_original_filename(ofn=None):
+    if not ofn:
+        ofns = pe.get_originalfilenames()
+        return render_template('orig_filename.html', ofns=ofns, ofn=None)
+    else:
+        samples = pe.get_samples_originalfilename(ofn)
+        return render_template('orig_filename.html', ofn=ofn, samples=samples)
+
+
+@app.route('/pe_imphash/', defaults={'imphash': None})
+@app.route('/pe_imphash/<imphash>', methods=['GET'])
+def pe_imphash(imphash=None):
+    if not imphash:
+        imphashs = pe.get_imphashs()
+        return render_template('imphash.html', imphashs=imphashs, imphash=None)
+    else:
+        samples = pe.get_samples_imphash(imphash)
+        return render_template('imphash.html', imphash=imphash, samples=samples)
+
+
+@app.route('/pe_entrypoint/', defaults={'ept': None})
+@app.route('/pe_entrypoint/<ept>', methods=['GET'])
+def pe_entrypoint(ept=None):
+    if not ept:
+        epts = pe.get_entrypoints()
+        return render_template('entrypoint.html', epts=epts, ept=None)
+    else:
+        samples = pe.get_samples_originalfilename(ept)
+        return render_template('entrypoint.html', ept=ept, samples=samples)
+
+
+@app.route('/pe_secnumber/', defaults={'snb': None})
+@app.route('/pe_secnumber/<snb>', methods=['GET'])
+def pe_secnumber(snb=None):
+    if not snb:
+        snbs = pe.get_secnumbers()
+        return render_template('secnumber.html', snbs=snbs, snb=None)
+    else:
+        samples = pe.get_samples_secnumber(snb)
+        return render_template('secnumber.html', snb=snb, samples=samples)
+
 
 if __name__ == '__main__':
     connector = SnapshotConnector()

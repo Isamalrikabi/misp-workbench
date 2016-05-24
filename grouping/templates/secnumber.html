@@ -1,31 +1,29 @@
 {% extends "main.html" %}
-{% block title %}All known PE compilation timestamps{% endblock %}
+{% block title %}All known PE section numbers{% endblock %}
 
 {% block content %}
 <div class="container">
-  <h1>Compilation timestamps</h1>
+  <h1>Amount of sections</h1>
 
-    {% if timestamps %}
+    {% if snbs %}
         <table class="table table-condensed">
             <thead>
                 <tr>
-                    <th>Timestamp</th>
-                    <th>Timestamp ISO</th>
+                    <th>Amount of sections</th>
                     <th>Frequency</th>
                 </tr>
             </thead>
             <tbody>
-                {% for t, iso, freq in timestamps %}
+                {% for snb, freq in snbs %}
                 <tr>
-                    <td><a href="{{ url_for('pe_ts', timestamp=t) }}">{{ t }}</a></td>
-                    <td>{{ iso }}</td>
+                    <td><a href="{{ url_for('pe_secnumber', snb=snb) }}">{{ snb }}</a></td>
                     <td>{{ freq }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-    {% elif timestamp %}
-        <h2> {{ timestamp }} </h2>
+    {% elif snb %}
+        <h2> {{ snb }} </h2>
         <table class="table table-condensed">
             <thead>
                 <tr>
@@ -36,7 +34,7 @@
                 {% for s in samples %}
                 <tr>
                     <td><a href="{{ url_for('pe_sample_info', sha256=s)}}">{{ s }}</a></td>
-                    <!-- TODO: Ass some more details on the samples on that page -->
+                    <!-- TODO: Add some more details on the samples on that page -->
                 </tr>
                 {% endfor %}
             </tbody>
