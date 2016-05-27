@@ -14,6 +14,9 @@ class PECorrelator(object):
     def get_all_samples(self):
         return self.r.smembers('hashes_sha256')
 
+    def get_all_hashes(self, sha256):
+        return [sha256] + list(self.r.hmget(sha256, ['sha1', 'md5']))
+
     def get_sample_info(self, sha256):
         return self.r.hgetall(sha256)
 

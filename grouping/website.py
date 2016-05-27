@@ -65,7 +65,7 @@ def merged_details():
 def merged_groups_details():
     to_merge = request.form.getlist("to_merge")
     correlations, total = connector.groups_similarities(*to_merge)
-    attr_digests = [('<br/>'.join(attr[0]), '<br/>'.join(attr[1])) for attr in connector.key_values_digests(connector.intersection_groups(to_merge))]
+    attr_digests = [(' - '.join(attr[0]), ' - '.join(attr[1])) for attr in connector.key_values_digests(connector.intersection_groups(to_merge))]
 
     return render_template('merged_groups.html', correlations=correlations,
                            total=total, events_in_groups=sort_groups(connector, to_merge),
@@ -91,6 +91,14 @@ def strip_char(text):
     return ''.join([i for i in text if i in string.ascii_letters + string.digits])
 
 
+def search_hash(samples_hash):
+    hashes = pe.get_all_hashes(samples_hash)
+    eids = set()
+    for h in hashes:
+        eids.update(search(h, 'value'))
+    return eids
+
+
 @app.route('/groups', methods=['GET', 'POST'])
 def groups_list():
     if request.form.getlist("to_merge") and request.form.get('new_group_name'):
@@ -102,7 +110,8 @@ def groups_list():
 def search_events():
     if request.form.get('query'):
         eids = search(request.form.get('query'))
-        return merge_events(eids)
+        if eids:
+            return merge_events(eids)
     return render_template('search.html')
 
 
@@ -110,12 +119,15 @@ def search_events():
 @app.route('/pe_timestamps/<int:timestamp>', methods=['GET'])
 def pe_ts(timestamp=None):
     if not timestamp:
-        print(pe.get_timestamps())
         timestamps = [(t, datetime.datetime.fromtimestamp(int(t)).isoformat(), f) for t, f in pe.get_timestamps()]
         return render_template('all_timestamps.html', timestamps=timestamps, timestamp=None)
     else:
         samples = pe.get_samples_timestamp(timestamp)
-        return render_template('all_timestamps.html', timestamp=timestamp, samples=samples)
+        all_eids = set()
+        for s in samples:
+            all_eids.update(search_hash(s))
+        events = connector.get_events(all_eids)
+        return render_template('all_timestamps.html', timestamp=timestamp, samples=samples, events=events)
 
 
 @app.route('/pe_sample_info/', defaults={'sha256': None})
@@ -145,7 +157,11 @@ def pe_original_filename(ofn=None):
         return render_template('orig_filename.html', ofns=ofns, ofn=None)
     else:
         samples = pe.get_samples_originalfilename(ofn)
-        return render_template('orig_filename.html', ofn=ofn, samples=samples)
+        all_eids = set()
+        for s in samples:
+            all_eids.update(search_hash(s))
+        events = connector.get_events(all_eids)
+        return render_template('orig_filename.html', ofn=ofn, samples=samples, events=events)
 
 
 @app.route('/pe_imphash/', defaults={'imphash': None})

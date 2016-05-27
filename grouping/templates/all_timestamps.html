@@ -26,21 +26,8 @@
         </table>
     {% elif timestamp %}
         <h2> {{ timestamp }} </h2>
-        <table class="table table-condensed">
-            <thead>
-                <tr>
-                    <th>Sha256</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for s in samples %}
-                <tr>
-                    <td><a href="{{ url_for('pe_sample_info', sha256=s)}}">{{ s }}</a></td>
-                    <!-- TODO: Ass some more details on the samples on that page -->
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {% include "block_events.html" with context %}
+        {% include "block_samples.html" with context %}
     {% endif %}
 </div>
 {% endblock %}

@@ -1,5 +1,20 @@
 {% extends "bootstrap/base.html" %}
 
+{% block scripts %}
+    {{ super() }}
+    <script>
+        $("#unCheckAll").click(function () {
+            $(".check").removeAttr('checked');
+        });
+    </script>
+    <script>
+        $("#checkAll").click(function () {
+            $(".check").prop('checked', $(this).prop('checked'));
+        });
+    </script>
+{% endblock %}
+
+
 {% block navbar %}
   {{nav.mynavbar.render()}}
 {% endblock %}

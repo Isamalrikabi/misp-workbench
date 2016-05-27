@@ -1,49 +1,9 @@
 {% extends "main.html" %}
 {% block title %}Events{% endblock %}
 
-{% block scripts %}
-    {{ super() }}
-    <script>
-        $("#unCheckAll").click(function () {
-            $(".check").removeAttr('checked');
-        });
-    </script>
-{% endblock %}
-
 {% block content %}
 <div class="container">
   <h1>All events</h1>
-
-    <form class="form-inline" role="form" action="merged" method=post>
-        <button type="submit" class="btn btn-default">Merge events</button>
-        <div class="checkbox">
-            <button class="btn" type="button" id="unCheckAll">Un-Check All</button>
-        </div>
-
-        <table class="table table-condensed">
-            <thead>
-                <tr>
-                    <th>Event ID</th>
-                    <th>Info</th>
-                    <th>Date</th>
-                    <th>Tags</th>
-                <tr>
-            </thead>
-            <tbody>
-                {% for event in events %}
-                <tr>
-                    <td>
-                        <div class="checkbox text-nowrap">
-                            <label><input class="check" type="checkbox" name=to_merge value="{{ event.eid }}"> {{ event.eid }}</label>
-                        </div>
-                    </td>
-                    <td>{{ event.info }}</td>
-                    <td>{{ event.date }}</td>
-                    <td>{{ ', '.join(event.tags) }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </form>
+  {% include "block_events.html" with context %}
 </div>
 {% endblock %}
