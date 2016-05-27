@@ -11,19 +11,22 @@
                 <tr>
                     <th>Entrypoint</th>
                     <th>Frequency</th>
+                    <th>Unique EventIDs</th>
                 </tr>
             </thead>
             <tbody>
-                {% for ept, freq in epts %}
+                {% for ept, freq, eids in epts %}
                 <tr>
                     <td><a href="{{ url_for('pe_entrypoint', ept=ept) }}">{{ ept }}</a></td>
                     <td>{{ freq }}</td>
+                    <td>{{ eids }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     {% elif ept %}
         <h2> {{ ept }} </h2>
+        {% include "block_events.html" with context %}
         {% include "block_samples.html" with context %}
     {% endif %}
 </div>

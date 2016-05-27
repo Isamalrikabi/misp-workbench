@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from connector import SnapshotConnector
 from whoosh.index import create_in, open_dir
 from whoosh.fields import NGRAMWORDS, ID, Schema, KEYWORD
 from whoosh.qparser import MultifieldParser, OrGroup
@@ -37,6 +36,7 @@ def search(query, fields=None):
         return set([r['eid'] for r in responses])
 
 if __name__ == '__main__':
+    from connector import SnapshotConnector
     connector = SnapshotConnector()
     schema = Schema(eid=ID(stored=True), info=NGRAMWORDS(minsize=4, queryor=True),
                     value=KEYWORD(lowercase=True),

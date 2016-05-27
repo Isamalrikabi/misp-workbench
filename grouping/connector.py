@@ -4,6 +4,7 @@
 from redis import StrictRedis
 from config import redis_socket
 from Crypto.Hash import SHA256
+from fti import search
 
 
 class SnapshotConnector(object):
@@ -26,6 +27,18 @@ class SnapshotConnector(object):
         else:
             eids = sorted(events, key=int, reverse=True)
         return [self.get_event_digest(eid) for eid in eids]
+
+    def hashes_eids(self, hashes):
+        eids = set()
+        for h in hashes:
+            eids.update(self.r.smembers('{}:eids'.format(h)))
+        return eids
+
+    def rebuild_eid_cache(self):
+        for sha256 in self.r.smembers('hashes_sha256'):
+            sha1, md5 = self.r.hmget(sha256, ['sha1', 'md5'])
+            eids = search('{} {} {}'.format(sha256, sha1, md5), 'value')
+            self.r.sadd('{}:eids'.format(sha256), *eids)
 
     # ##### Values functions #####
 

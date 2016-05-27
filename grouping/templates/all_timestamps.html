@@ -12,14 +12,16 @@
                     <th>Timestamp</th>
                     <th>Timestamp ISO</th>
                     <th>Frequency</th>
+                    <th>Unique EventIDs</th>
                 </tr>
             </thead>
             <tbody>
-                {% for t, iso, freq in timestamps %}
+                {% for t, iso, freq, eids in timestamps %}
                 <tr>
                     <td><a href="{{ url_for('pe_ts', timestamp=t) }}">{{ t }}</a></td>
                     <td>{{ iso }}</td>
                     <td>{{ freq }}</td>
+                    <td>{{ eids }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

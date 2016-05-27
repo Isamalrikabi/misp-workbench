@@ -11,19 +11,22 @@
                 <tr>
                     <th>Imphash</th>
                     <th>Frequency</th>
+                    <th>Unique EventIDs</th>
                 </tr>
             </thead>
             <tbody>
-                {% for imphash, freq in imphashs %}
+                {% for imphash, freq, eids in imphashs %}
                 <tr>
                     <td><a href="{{ url_for('pe_imphash', imphash=imphash) }}">{{ imphash }}</a></td>
                     <td>{{ freq }}</td>
+                    <td>{{ eids }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     {% elif imphash %}
         <h2> {{ imphash }} </h2>
+        {% include "block_events.html" with context %}
         {% include "block_samples.html" with context %}
     {% endif %}
 </div>

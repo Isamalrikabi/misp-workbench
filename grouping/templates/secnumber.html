@@ -11,19 +11,22 @@
                 <tr>
                     <th>Amount of sections</th>
                     <th>Frequency</th>
+                    <th>Unique EventIDs</th>
                 </tr>
             </thead>
             <tbody>
-                {% for snb, freq in snbs %}
+                {% for snb, freq, eids in snbs %}
                 <tr>
                     <td><a href="{{ url_for('pe_secnumber', snb=snb) }}">{{ snb }}</a></td>
                     <td>{{ freq }}</td>
+                    <td>{{ eids }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     {% elif snb %}
         <h2> {{ snb }} </h2>
+        {% include "block_events.html" with context %}
         {% include "block_samples.html" with context %}
     {% endif %}
 </div>

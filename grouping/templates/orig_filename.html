@@ -11,13 +11,15 @@
                 <tr>
                     <th>Original Filename</th>
                     <th>Frequency</th>
+                    <th>Unique EventIDs</th>
                 </tr>
             </thead>
             <tbody>
-                {% for ofn, freq in ofns %}
+                {% for ofn, freq, eids in ofns %}
                 <tr>
                     <td><a href="{{ url_for('pe_original_filename', ofn=ofn) }}">{{ ofn }}</a></td>
                     <td>{{ freq }}</td>
+                    <td>{{ eids }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
