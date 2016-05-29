@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from whoosh.index import create_in, open_dir
-from whoosh.fields import NGRAMWORDS, ID, Schema, KEYWORD
+from whoosh.fields import NGRAM, ID, Schema, KEYWORD
 from whoosh.qparser import MultifieldParser, OrGroup
+from collections import Counter
 
 
 def index_all(connector, schema):
@@ -32,14 +33,14 @@ def search(query, fields=None):
     mparser = MultifieldParser(search_fields, schema=ix.schema, group=OrGroup)
     with ix.searcher() as searcher:
         q = mparser.parse(query)
-        responses = searcher.search(q)
-        return set([r['eid'] for r in responses])
+        responses = searcher.search(q, limit=None)
+        return Counter([r['eid'] for r in responses])
 
 if __name__ == '__main__':
     from connector import SnapshotConnector
     connector = SnapshotConnector()
-    schema = Schema(eid=ID(stored=True), info=NGRAMWORDS(minsize=4, queryor=True),
+    schema = Schema(eid=ID(stored=True), info=NGRAM(minsize=5, phrase=True),
                     value=KEYWORD(lowercase=True),
-                    comment=NGRAMWORDS(minsize=4, queryor=True),
-                    tags=NGRAMWORDS(minsize=4, queryor=True))
+                    comment=NGRAM(minsize=5, phrase=True),
+                    tags=KEYWORD(lowercase=True))
     index_all(connector, schema)

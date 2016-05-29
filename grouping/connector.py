@@ -38,7 +38,9 @@ class SnapshotConnector(object):
         for sha256 in self.r.smembers('hashes_sha256'):
             sha1, md5 = self.r.hmget(sha256, ['sha1', 'md5'])
             eids = search('{} {} {}'.format(sha256, sha1, md5), 'value')
-            self.r.sadd('{}:eids'.format(sha256), *eids)
+            if eids:
+                all_eids = [e for e, f in eids.most_common()]
+                self.r.sadd('{}:eids'.format(sha256), *all_eids)
 
     # ##### Values functions #####
 

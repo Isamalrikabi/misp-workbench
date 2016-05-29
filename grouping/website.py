@@ -105,7 +105,7 @@ def search_hashes_slow(samples_hash):
             to_search += pe.get_all_hashes(h)
     else:
         to_search = pe.get_all_hashes(samples_hash)
-    eids = set(search(' '.join(to_search), 'value'))
+    eids = [e for e, f in search(' '.join(to_search), 'value').most_common()]
     return eids
 
 
@@ -121,7 +121,8 @@ def search_events():
     if request.form.get('query'):
         eids = search(request.form.get('query'))
         if eids:
-            return merge_events(eids)
+            top = [e for e, f in eids.most_common(20)]
+            return merge_events(top)
     return render_template('search.html')
 
 

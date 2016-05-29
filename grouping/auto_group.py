@@ -26,24 +26,30 @@ def adversary_groups(galaxy):
     connector = SnapshotConnector()
     content = galaxy['elements']['adversary-groups']
     for group in content['details']:
-        eids = search(group['group'])
+        eids = search('"{}"'.format(group['group']), ['info', 'comment'])
+        eids += search(group['group'], ['value', 'tags'])
         if group.get('synonyms'):
             for syn in group.get('synonyms'):
-                eids.update(search(syn))
+                eids += search('"{}"'.format(syn), ['info', 'comment'])
+                eids += search(syn, ['value', 'tags'])
         if eids:
-            connector.update_group('adversaries:{}'.format(group['group']), *eids)
+            top = [e for e, f in eids.most_common(20)]
+            connector.update_group('adversaries:{}'.format(group['group']), *top)
 
 
 def tools(galaxy):
     connector = SnapshotConnector()
     content = galaxy['elements']['threat-actor-tools']
     for tool in content['values']:
-        eids = search(tool['value'])
+        eids = search('"{}"'.format(tool['value']), ['info', 'comment'])
+        eids += search(tool['value'], ['value', 'tags'])
         if tool.get('synonyms'):
             for syn in tool.get('synonyms'):
-                eids.update(search(syn))
+                eids += search('"{}"'.format(syn), ['info', 'comment'])
+                eids += search(syn, ['value', 'tags'])
         if eids:
-            connector.update_group('tools:{}'.format(tool['value']), *eids)
+            top = [e for e, f in eids.most_common(20)]
+            connector.update_group('tools:{}'.format(tool['value']), *top)
 
 
 if __name__ == '__main__':
