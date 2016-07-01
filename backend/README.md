@@ -81,8 +81,8 @@ val:<hashed_value> value(value)
 
 ``` python
 uuid_id hash(<event_uuid>: <event_id>)
-<orgid>:<hashed_value> set(event_uuids)  # if the sharing is limited
-<hashed_value> set(event_uuids)  # if the sharing isn't limited
+hashstore:<hashed_value> set(event_uuids)  # if the sharing isn't limited
+hashstore:<orgid>:<hashed_value> set(event_uuids)  # if the sharing is limited
 ```
 
 

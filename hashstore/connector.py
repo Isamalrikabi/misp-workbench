@@ -34,9 +34,12 @@ class MispRedisConnector(object):
         if not org:
             raise Exception('Invalid authkey')
 
+        key = 'hashstore:'
+        key_acl = 'hashstore:{}:'.format(org)
+
         if quiet:
-            return [(self.r.exists(h) or self.r.exists(org + ':' + h)) for h in hash_values]
-        uuid_by_hashes = [self.r.smembers(h).union(self.r.smembers(org + ':' + h)) for h in hash_values]
+            return [(self.r.exists(key + h) or self.r.exists(key_acl + h)) for h in hash_values]
+        uuid_by_hashes = [self.r.smembers(key + h).union(self.r.smembers(key_acl + h)) for h in hash_values]
         if not return_eid:
             to_return = uuid_by_hashes
         else:

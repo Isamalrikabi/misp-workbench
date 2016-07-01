@@ -144,25 +144,25 @@ class MispMySQLConnector(object):
                 to_return[a['event_id']].append(a['value1'])
         return to_return
 
-    # ####### Cache all attributes for fast access. Auth preserved. ########
+    # ####### Cache all attributes for fast access. Auth can be preserved. ########
 
     def _add_hash(self, event_uuid, value1, value2='', orgid=None):
         if orgid:
-            key = '{}:'.format(orgid)
+            key = 'hashstore:{}:'.format(orgid)
         else:
-            key = ''
+            key = 'hashstore:'
         hash_value = SHA256.new(value1.lower()).hexdigest()
         self.r.sadd(key + hash_value, event_uuid)
         if value2:
             hash_value = SHA256.new(value2.lower()).hexdigest()
             self.r.sadd(key + hash_value, event_uuid)
 
-    def cache_attributes(self):
+    def cache_attributes(self, check_ACL=True):
         eid_uuid = self.__get_all_event_uuid()
         attributes = self.connection.execute(select([self.attributes]))
         for a in attributes:
             orgid = None
-            if a['distribution'] == 0:
+            if check_ACL and a['distribution'] == 0:
                 # Limited distribution (this org only)
                 result = self.connection.execute(select([self.events.c.org_id]).where(self.events.c.id == a['event_id']))
                 for e in result:
