@@ -22,7 +22,7 @@ class SnapshotConnector(object):
         return [(g, self.get_events(self.r.smembers(g))) for g in grps]
 
     def get_events(self, events=None):
-        if not events:
+        if events is None:
             eids = sorted(self.r.smembers('events'), key=int, reverse=True)
         else:
             eids = sorted(events, key=int, reverse=True)
