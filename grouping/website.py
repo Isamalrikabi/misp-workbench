@@ -92,7 +92,6 @@ def strip_char(text):
 
 
 def search_hashes_fast(samples_hash):
-    # NOTE: require EID cache (see SnapshotConnector.rebuild_eid_cache)
     if not (isinstance(samples_hash, list) or isinstance(samples_hash, set)):
         samples_hash = [samples_hash]
     return connector.hashes_eids(samples_hash)
@@ -150,7 +149,7 @@ def pe_sample_info(sha256=None):
 def pe_ts(timestamp=None):
     if not timestamp:
         timestamps = [(t, datetime.datetime.fromtimestamp(int(t)).isoformat(), f) for t, f in pe.get_timestamps()]
-        timestamps = [(t, i, f, len(search_hashes_fast(pe.get_samples_timestamp(t)))) for t, i, f in timestamps]
+        timestamps = [(t, i, int(f), len(search_hashes_fast(pe.get_samples_timestamp(t)))) for t, i, f in timestamps]
         return render_template('all_timestamps.html', timestamps=timestamps, timestamp=None)
     else:
         samples = pe.get_samples_timestamp(timestamp)
@@ -163,7 +162,7 @@ def pe_ts(timestamp=None):
 def pe_original_filename(ofn=None):
     if not ofn:
         ofns = pe.get_originalfilenames()
-        ofns = [(o, freq, len(search_hashes_fast(pe.get_samples_originalfilename(o)))) for o, freq in ofns]
+        ofns = [(o, int(freq), len(search_hashes_fast(pe.get_samples_originalfilename(o)))) for o, freq in ofns]
         return render_template('orig_filename.html', ofns=ofns, ofn=None)
     else:
         samples = pe.get_samples_originalfilename(ofn)
@@ -176,7 +175,7 @@ def pe_original_filename(ofn=None):
 def pe_imphash(imphash=None):
     if not imphash:
         imphashs = pe.get_imphashs()
-        imphashs = [(i, freq, len(search_hashes_fast(pe.get_samples_imphash(i)))) for i, freq in imphashs]
+        imphashs = [(i, int(freq), len(search_hashes_fast(pe.get_samples_imphash(i)))) for i, freq in imphashs]
         return render_template('imphash.html', imphashs=imphashs, imphash=None)
     else:
         samples = pe.get_samples_imphash(imphash)
@@ -189,7 +188,7 @@ def pe_imphash(imphash=None):
 def pe_entrypoint(ept=None):
     if not ept:
         epts = pe.get_entrypoints()
-        epts = [(e, freq, len(search_hashes_fast(pe.get_samples_entrypoint(e)))) for e, freq in epts]
+        epts = [(e, int(freq), len(search_hashes_fast(pe.get_samples_entrypoint(e)))) for e, freq in epts]
         return render_template('entrypoint.html', epts=epts, ept=None)
     else:
         samples = pe.get_samples_entrypoint(ept)
@@ -202,7 +201,7 @@ def pe_entrypoint(ept=None):
 def pe_secnumber(snb=None):
     if not snb:
         snbs = pe.get_secnumbers()
-        snbs = [(s, freq, len(search_hashes_fast(pe.get_samples_secnumber(s)))) for s, freq in snbs]
+        snbs = [(s, int(freq), len(search_hashes_fast(pe.get_samples_secnumber(s)))) for s, freq in snbs]
         return render_template('secnumber.html', snbs=snbs, snb=None)
     else:
         samples = pe.get_samples_secnumber(snb)
