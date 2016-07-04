@@ -1,0 +1,33 @@
+{% extends "main.html" %}
+{% block title %}All ssdeep clusters{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>Group name</h1>
+
+    {% if ssdc_groups %}
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>Group name</th>
+                    <th>Unique samples in group</th>
+                    <th>Unique EventIDs</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for group, freq, eids in ssdc_groups %}
+                <tr>
+                    <td><a href="{{ url_for('ssdeep', group=group) }}">{{ group }}</a></td>
+                    <td>{{ freq }}</td>
+                    <td>{{ eids }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% elif group %}
+        <h2> {{ group }} </h2>
+        {% include "block_events.html" with context %}
+        {% include "block_samples.html" with context %}
+    {% endif %}
+</div>
+{% endblock %}

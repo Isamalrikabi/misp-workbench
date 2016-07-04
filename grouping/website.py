@@ -10,6 +10,7 @@ from pecorrelator import PECorrelator
 from fti import search
 import string
 import datetime
+from ssdeep_processing import SSDC
 
 nav = Nav()
 
@@ -27,6 +28,7 @@ def mynavbar():
         View('Imphahses', 'pe_imphash'),
         View('Entrypoints', 'pe_entrypoint'),
         View('Secnumbers', 'pe_secnumber'),
+        View('SSDeep', 'ssdeep'),
     )
 
 app = Flask(__name__)
@@ -209,7 +211,21 @@ def pe_secnumber(snb=None):
         return render_template('secnumber.html', snb=snb, samples=samples, events=events)
 
 
+@app.route('/ssdeep/', defaults={'group': None})
+@app.route('/ssdeep/<group>', methods=['GET'])
+def ssdeep(group=None):
+    if not group:
+        groups = ssdc.get_all_groups()
+        ssdc_groups = [(g, len(hashes), len(search_hashes_fast(hashes))) for g, hashes in groups]
+        return render_template('ssdeep.html', ssdc_groups=ssdc_groups, group=None)
+    else:
+        samples = ssdc.get_group_samples(group)
+        events = connector.get_events(search_hashes_fast(samples))
+        return render_template('ssdeep.html', group=group, samples=samples, events=events)
+
+
 if __name__ == '__main__':
     connector = SnapshotConnector()
     pe = PECorrelator()
+    ssdc = SSDC()
     app.run()
