@@ -11,6 +11,7 @@ from fti import search
 import string
 import datetime
 from ssdeep_processing import SSDC
+from operator import itemgetter
 
 nav = Nav()
 
@@ -216,7 +217,7 @@ def pe_secnumber(snb=None):
 def ssdeep(group=None):
     if not group:
         groups = ssdc.get_all_groups()
-        ssdc_groups = [(g, len(hashes), len(search_hashes_fast(hashes))) for g, hashes in groups]
+        ssdc_groups = sorted([(g, len(hashes), len(search_hashes_fast(hashes))) for g, hashes in groups], key=itemgetter(1, 2), reverse=True)
         return render_template('ssdeep.html', ssdc_groups=ssdc_groups, group=None)
     else:
         samples = ssdc.get_group_samples(group)

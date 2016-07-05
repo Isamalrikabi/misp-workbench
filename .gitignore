@@ -4,6 +4,7 @@ config.py
 *.egg-info
 build/
 dist/
+static/
 
 *.swp
 
