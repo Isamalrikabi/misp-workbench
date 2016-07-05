@@ -22,6 +22,7 @@ redis_socket = '<path to the redis socket>'
  ```
 
 * Run a redis server listening on the socket you defined in the config file
+* Run `update_thirdparty.sh`
 * Run `website.py`
 
 ## Optional
