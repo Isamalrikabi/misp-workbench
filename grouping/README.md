@@ -10,6 +10,7 @@ the analyst wants.
 
 # Requirements
 
+* sudo apt-get install python-dev libfuzzy-dev
 * access to the redis database created by `backend/make_snapshot.py`
 * python packages: `pip install -r requirements.txt`
 
