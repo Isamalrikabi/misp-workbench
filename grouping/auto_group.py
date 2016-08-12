@@ -25,9 +25,9 @@ def load_galaxy():
 def adversary_groups(galaxy):
     connector = SnapshotConnector()
     content = galaxy['elements']['adversary-groups']
-    for group in content['details']:
-        eids = search('"{}"'.format(group['group']), ['info', 'comment'])
-        eids += search(group['group'], ['value', 'tags'])
+    for group in content['values']:
+        eids = search('"{}"'.format(group['value']), ['info', 'comment'])
+        eids += search(group['value'], ['value', 'tags'])
         if group.get('synonyms'):
             for syn in group.get('synonyms'):
                 eids += search('"{}"'.format(syn), ['info', 'comment'])
