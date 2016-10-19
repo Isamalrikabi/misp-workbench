@@ -29,6 +29,8 @@ def search(query, fields=None):
         search_fields = fields
     else:
         search_fields = [fields]
+    if not os.path.exists("indexdir"):
+        os.mkdir("indexdir")
     ix = open_dir("indexdir")
     mparser = MultifieldParser(search_fields, schema=ix.schema, group=OrGroup)
     with ix.searcher() as searcher:
